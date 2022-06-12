@@ -2,6 +2,8 @@ package com.feed_the_beast.mods.ftbbackups;
 
 import com.feed_the_beast.mods.ftbbackups.net.BackupProgressPacket;
 import com.feed_the_beast.mods.ftbbackups.net.FTBBackupsNetHandler;
+import com.feed_the_beast.mods.ftbbackups.webhook.WebhookClient;
+import com.feed_the_beast.mods.ftbbackups.webhook.model.BackupDoneNotification;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -183,7 +185,11 @@ public enum Backups
 			{
 				try
 				{
-					createBackup(server, customName);
+					String backupFileName = createBackup(server, customName);
+					if(FTBBackupsConfig.webhookSwitch) {
+						WebhookClient webhookClient = new WebhookClient();
+						webhookClient.postBackupDoneNotification(new BackupDoneNotification(backupFileName));
+					}
 				}
 				catch (Exception ex)
 				{
@@ -203,7 +209,7 @@ public enum Backups
 		return true;
 	}
 
-	private void createBackup(MinecraftServer server, String customName)
+	private String createBackup(MinecraftServer server, String customName)
 	{
 		File src = server.func_240776_a_(FolderName.field_237253_i_).toFile();
 
@@ -446,6 +452,7 @@ public enum Backups
 			component.getStyle().setColor(Color.func_240744_a_(TextFormatting.LIGHT_PURPLE));
 			server.getPlayerList().func_232641_a_(component, ChatType.CHAT, Util.DUMMY_UUID);
 		}
+		return out.toString();
 	}
 
 	private void appendNum(StringBuilder sb, int num, char c)

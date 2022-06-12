@@ -25,6 +25,8 @@ public class FTBBackupsConfig
 	public static long maxTotalSize;
 	public static boolean onlyIfPlayersOnline;
 	public static boolean forceOnShutdown;
+	public static boolean webhookSwitch;
+	public static String webhookURL;
 	public static int bufferSize;
 
 	private static Pair<CommonConfig, ForgeConfigSpec> common;
@@ -86,6 +88,8 @@ public class FTBBackupsConfig
 
 		onlyIfPlayersOnline = cfg.onlyIfPlayersOnline.get();
 		forceOnShutdown = cfg.forceOnShutdown.get();
+		webhookSwitch = cfg.webhookSwitch.get();
+		webhookURL = cfg.webhookURL.get();
 		bufferSize = cfg.bufferSize.get();
 	}
 
@@ -102,6 +106,8 @@ public class FTBBackupsConfig
 		private final ForgeConfigSpec.ConfigValue<String> maxTotalSize;
 		private final ForgeConfigSpec.BooleanValue onlyIfPlayersOnline;
 		private final ForgeConfigSpec.BooleanValue forceOnShutdown;
+		private final ForgeConfigSpec.BooleanValue webhookSwitch;
+		private final ForgeConfigSpec.ConfigValue<String> webhookURL;
 		private final ForgeConfigSpec.IntValue bufferSize;
 
 		private CommonConfig(ForgeConfigSpec.Builder builder)
@@ -174,6 +180,20 @@ public class FTBBackupsConfig
 					.comment("Create a backup when server is stopped.")
 					.translation("ftbbackups.general.force_on_shutdown")
 					.define("force_on_shutdown", false);
+
+			builder.comment("Send a notification to a webhook URL when the backup process done.").push("webhook");
+			
+			webhookSwitch = builder
+					.comment("Whether to enable the webhook function.")
+					.translation("ftbbackups.general.webhook_enabled")
+					.define("webhook_enabled", false);
+
+			webhookURL = builder
+					.comment("The target URL that notification will be sent to.")
+					.translation("ftbbackups.general.webhook_url")
+					.define("webhook_url", "http://www.example.com/");
+
+			builder.pop();
 
 			builder.comment("Advanced features that shouldn't be changed unless you know what you are doing.").push("advanced");
 
